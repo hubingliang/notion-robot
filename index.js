@@ -98,7 +98,13 @@ const main = async () => {
   await addTask();
 };
 // main();
-const job = schedule.scheduleJob("* * * *", async () => {
+
+let rule = new schedule.RecurrenceRule();
+rule.hour = 0;
+rule.minute = 0;
+rule.second = 0;
+
+const job = schedule.scheduleJob(rule, async () => {
   await addTask();
   console.log("Success set task at", moment().format("dddd"));
 });
