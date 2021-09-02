@@ -96,9 +96,9 @@ const main = async () => {
   //   await archivedPage(task);
   // });
   await addTask();
-  console.log("Success set task at", moment().format("dddd"));
 };
 // main();
 const job = schedule.scheduleJob("* * * *", async () => {
   await addTask();
+  console.log("Success set task at", moment().format("dddd"));
 });
