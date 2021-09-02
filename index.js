@@ -1,16 +1,40 @@
 import { Client } from "@notionhq/client";
 import schedule from "node-schedule";
 import dotenv from "dotenv";
+import moment from "moment";
 dotenv.config();
 const notion = new Client({ auth: process.env.NOTION_KEY });
 
 const databaseId = process.env.NOTION_DATABASE_ID;
-console.log("databaseId: ", databaseId);
-const job = schedule.scheduleJob("0 0 * * *", function () {
-  addItem("Yurts in Big Sur, California");
-});
-async function addItem(text) {
+const skills = [
+  "Two feel & Four beat",
+  "Chord arpeggio",
+  "Lonian",
+  "Dorian",
+  "Phrygian",
+  "Lydian",
+  "Mixolydian",
+  "Aeolian",
+  "Locrian",
+  "Altered",
+  "Lydian b7",
+  "Bebop",
+];
+const standards = [
+  "Autumn Leaves",
+  "Billie's Bounce",
+  "Beautiful Love",
+  `Take The "A" Train`,
+];
+
+export const random = (arr) => {
+  const index = Math.floor(Math.random() * arr.length);
+  return arr[index];
+};
+const addTask = async () => {
   try {
+    const standard = random(standards);
+    const skill = random(skills);
     const response = await notion.pages.create({
       parent: { database_id: databaseId },
       properties: {
@@ -18,29 +42,62 @@ async function addItem(text) {
           title: [
             {
               text: {
-                content: text,
+                content: standard,
               },
             },
           ],
         },
-        record: {
-          checkbox: false,
-        },
-        Tags: {
+        "Skill training": {
           multi_select: [
             {
-              name: "Mon",
-            },
-            {
-              name: "Sun",
+              name: skill,
             },
           ],
         },
+        Record: {
+          checkbox: false,
+        },
+        Date: {
+          date: {
+            start: moment(),
+          },
+        },
       },
     });
-    console.log(response);
-    console.log("Success! Entry added.");
+  } catch (error) {
+    console.log("error: ", error);
+    console.error(error.body);
+  }
+};
+const getAllTasks = async () => {
+  try {
+    const response = await notion.databases.query({
+      database_id: databaseId,
+    });
+    return response.results;
   } catch (error) {
     console.error(error.body);
   }
-}
+};
+const archivedPage = async (task) => {
+  try {
+    const response = await notion.pages.update({
+      page_id: task.id,
+      archived: true,
+    });
+  } catch (error) {
+    console.error(error.body);
+  }
+};
+const main = async () => {
+  // const tasks = await getAllTasks();
+  // tasks.map(async (task) => {
+  //   await archivedPage(task);
+  // });
+  await addTask();
+  console.log("Success set task at", moment().format("dddd"));
+};
+main();
+// const job = schedule.scheduleJob("* * * * * *", async () => {
+//   await addTask();
+// });
