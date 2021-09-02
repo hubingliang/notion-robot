@@ -25,6 +25,7 @@ const standards = [
   "Billie's Bounce",
   "Beautiful Love",
   `Take The "A" Train`,
+  "Fly Me To The Moon",
 ];
 
 export const random = (arr) => {
@@ -97,7 +98,7 @@ const main = async () => {
   await addTask();
   console.log("Success set task at", moment().format("dddd"));
 };
-main();
-// const job = schedule.scheduleJob("* * * * * *", async () => {
-//   await addTask();
-// });
+// main();
+const job = schedule.scheduleJob("* * * *", async () => {
+  await addTask();
+});
